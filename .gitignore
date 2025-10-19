@@ -1,0 +1,5 @@
+.prettierignore
+.env
+.prettierrc
+# Node modules
+node_modules/
