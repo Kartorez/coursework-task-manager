@@ -1,0 +1,25 @@
+.readonly-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 10px;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  min-height: 38px;
+  align-items: center;
+}
+
+.readonly-chip {
+  background: var(--accent-gradient);
+  color: #fff;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.readonly-empty {
+  color: var(--text-muted);
+  font-size: 14px;
+}

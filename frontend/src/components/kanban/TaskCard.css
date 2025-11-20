@@ -1,0 +1,149 @@
+.task-card{
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--divider-color);
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  z-index: 99999;
+}
+.task-card:hover {
+  box-shadow: var( --card-hover-shadow);
+  transform: translateY(-5px);
+  transition: box-shadow 0.3s ease;
+}
+.task-card__title{
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 125%;  
+}
+.task-card__description{
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+.task-card__footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.task-card__tags{
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.task-card__tag{
+  padding: 0.25rem 0.75rem;
+  color: var(--accent-color);
+  background: rgba(102, 126, 234, 0.2);
+  border-radius:12px;
+  text-align: center;
+}
+.task-card__assigneed{
+  display: flex;
+  gap: 0.5rem;
+}
+.task-card__assigneed-avatar{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--avatar-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #ffffff;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.task-body{
+  display: flex;
+  align-items: start;
+}
+.task-body__text{
+  flex: 1 1 82%;
+}
+
+.task-card__status{
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: 20px;
+}
+@media (max-width:768px) {
+  .task-card{
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  padding: 1.5rem;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: var(--shadow-light);
+  border: 1px solid var(--divider-color);
+  backdrop-filter: blur(20px);
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  z-index: 99999;
+}
+.task-card:hover {
+  box-shadow: var( --card-hover-shadow);
+  transform: translateY(-5px);
+  transition: box-shadow 0.3s ease;
+}
+.task-card__title{
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 125%;  
+}
+.task-card__description{
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 1rem;
+}
+.task-card__footer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.task-card__tags{
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.task-card__tag{
+  padding: 0.25rem 0.75rem;
+  color: var(--accent-color);
+  background: rgba(102, 126, 234, 0.2);
+  border-radius:12px;
+  text-align: center;
+}
+.task-card__assigneed{
+  display: flex;
+  gap: 0.5rem;
+}
+
+.task-body{
+  position: relative;
+  display: flex;
+  align-items: start;
+}
+.task-list> .task-card>.task-body>.task-body__text{
+  flex: 1 1 auto;
+  padding-top: 20px;
+}
+.task-card__status{
+  position: absolute;
+  right: 0;
+  top: -15px;
+}
+
+}
+

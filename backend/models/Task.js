@@ -20,15 +20,9 @@ const Task = sequelize.define(
       type: DataTypes.ENUM('todo', 'in-progress', 'done'),
       defaultValue: 'todo',
     },
-    role: {
-      type: DataTypes.STRING(20),
-      defaultValue: 'user',
-    },
   },
   {
-    timestamps: true,
-    createdAt: 'created_at',
-    updatedAt: 'updated_at',
+    timestamps: false,
   }
 );
 
