@@ -1,0 +1,125 @@
+.header {
+  width: 100%;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--navbar-bg);
+  backdrop-filter: blur(12px);
+  padding: 14px 28px;
+  transition: background 0.4s ease, color 0.4s ease;
+  z-index: 10;
+  box-shadow: var(--shadow-light);
+  border-bottom: 1px solid var(--divider-color);
+}
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  gap: 10px;
+  cursor: pointer;
+  transition: text-shadow 0.3s ease;
+}
+
+.navbar-logo:hover {
+  text-shadow: 0px 0px 20px var(--accent-shadow);
+}
+
+.logo {
+  height: 38px;
+  width: auto;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-link {
+  color: var(--accent-color);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-size: 1.25rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.navbar-link:hover,
+.navbar-link.active {
+  color: var(--accent-color-secondary);
+  background: rgba(102, 126, 234, 0.2);
+  box-shadow: 0 0 20px var(--accent-shadow);
+}
+
+.add-task-button {
+  padding: 8px 16px !important;
+}
+
+.nav-link {
+  font-size: 1rem;
+}
+
+.navbar-button{
+  display: flex;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 14px 28px;
+  }
+
+  .navbar-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .logo {
+    height: 30px;
+  }
+
+  .navbar-links {
+    display: none !important;
+  }
+
+  .add-task-button {
+    display: none !important;
+  }
+
+  .nav-link.form-link {
+    display: none !important;
+  }
+}
+
+
+.burger-btn {
+  display: none;
+  padding: 6px 12px;
+  font-size: 22px;
+  color: var(--text-color);
+  background: var(--surface-glass);
+  border: 1px solid var(--divider-color);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .burger-btn {
+    display: block;
+  }
+}

@@ -1,6 +1,5 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
-import Token from '../models/Token.js';
 import tokenService from '../service/tokenService.js';
 import ApiError from '../error/ApiError.js';
 
@@ -10,12 +9,14 @@ class AuthController {
       const { username, email, password } = req.body;
       if (!email || !password || !username) {
         return next(
-          ApiError.badRequest('Username, email and password are required')
+          ApiError.badRequest('Username, email, and password required')
         );
       }
 
       const existing = await User.findOne({ where: { email } });
-      if (existing) return next(ApiError.badRequest('User already exists'));
+      if (existing) {
+        return next(ApiError.badRequest('User already exists'));
+      }
 
       const passwordHash = await bcrypt.hash(password, 10);
       const user = await User.create({ username, email, passwordHash });
@@ -24,18 +25,24 @@ class AuthController {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role,
       });
 
       await tokenService.saveToken(user.id, tokens.refreshToken);
+
+      res.cookie('refreshToken', tokens.refreshToken, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
       return res.json({
         user: {
           id: user.id,
           username: user.username,
           email: user.email,
-          role: user.role,
         },
-        ...tokens,
+        accessToken: tokens.accessToken,
       });
     } catch (e) {
       next(ApiError.internal(e.message));
@@ -58,18 +65,24 @@ class AuthController {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role,
       });
 
       await tokenService.saveToken(user.id, tokens.refreshToken);
+
+      res.cookie('refreshToken', tokens.refreshToken, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
       return res.json({
         user: {
           id: user.id,
           username: user.username,
           email: user.email,
-          role: user.role,
         },
-        ...tokens,
+        accessToken: tokens.accessToken,
       });
     } catch (e) {
       next(ApiError.internal(e.message));
@@ -78,20 +91,18 @@ class AuthController {
 
   async logout(req, res, next) {
     try {
-      const { refreshToken } = req.body;
-      if (!refreshToken)
-        return next(ApiError.badRequest('Refresh token required'));
+      const { refreshToken } = req.cookies;
       await tokenService.removeToken(refreshToken);
+      res.clearCookie('refreshToken');
       res.json({ message: 'Logged out' });
     } catch (e) {
       next(ApiError.internal(e.message));
     }
   }
 
-  // optional: refresh tokens
   async refresh(req, res, next) {
     try {
-      const { refreshToken } = req.body;
+      const { refreshToken } = req.cookies;
       if (!refreshToken) return next(ApiError.unauthorized());
 
       const userData = tokenService.validateRefreshToken(refreshToken);
@@ -103,18 +114,24 @@ class AuthController {
         id: user.id,
         username: user.username,
         email: user.email,
-        role: user.role,
       });
+
       await tokenService.saveToken(user.id, tokens.refreshToken);
 
-      res.json({
+      res.cookie('refreshToken', tokens.refreshToken, {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: false,
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+
+      return res.json({
         user: {
           id: user.id,
           username: user.username,
           email: user.email,
-          role: user.role,
         },
-        ...tokens,
+        accessToken: tokens.accessToken,
       });
     } catch (e) {
       next(ApiError.internal(e.message));

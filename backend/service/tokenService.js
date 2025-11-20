@@ -1,8 +1,5 @@
-import jwt from 'jsonwebtoken';
 import Token from '../models/Token.js';
-import dotenv from 'dotenv';
-
-dotenv.config();
+import jwt from 'jsonwebtoken';
 
 class TokenService {
   generateTokens(payload) {
@@ -10,9 +7,28 @@ class TokenService {
       expiresIn: '15m',
     });
     const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET, {
-      expiresIn: '30d',
+      expiresIn: '7d',
     });
     return { accessToken, refreshToken };
+  }
+
+  async saveToken(userId, refreshToken) {
+    let tokenData = await Token.findOne({ where: { user_id: userId } });
+
+    if (tokenData) {
+      tokenData.refreshToken = refreshToken;
+      return tokenData.save();
+    }
+
+    return await Token.create({ user_id: userId, refreshToken });
+  }
+
+  async removeToken(refreshToken) {
+    return await Token.destroy({ where: { refreshToken } });
+  }
+
+  async findToken(refreshToken) {
+    return await Token.findOne({ where: { refreshToken } });
   }
 
   validateAccessToken(token) {
@@ -29,26 +45,6 @@ class TokenService {
     } catch (e) {
       return null;
     }
-  }
-
-  async saveToken(userId, refreshToken) {
-    const tokenData = await Token.findOne({ where: { userId } });
-    if (tokenData) {
-      tokenData.refreshToken = refreshToken;
-      return tokenData.save();
-    }
-    const token = await Token.create({ userId, refreshToken });
-    return token;
-  }
-
-  async removeToken(refreshToken) {
-    const tokenData = await Token.destroy({ where: { refreshToken } });
-    return tokenData;
-  }
-
-  async findToken(refreshToken) {
-    const tokenData = await Token.findOne({ where: { refreshToken } });
-    return tokenData;
   }
 }
 

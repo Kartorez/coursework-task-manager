@@ -1,22 +1,24 @@
-import jwt from 'jsonwebtoken';
 import ApiError from '../error/ApiError.js';
+import tokenService from '../service/tokenService.js';
 
-export default function authMiddleware(req, res, next) {
+export default function (req, res, next) {
   try {
     const authHeader = req.headers.authorization;
     if (!authHeader) {
-      return next(ApiError.unauthorized());
+      return next(ApiError.unauthorized('Authorization header missing'));
     }
-
     const token = authHeader.split(' ')[1];
     if (!token) {
-      return next(ApiError.unauthorized());
+      return next(ApiError.unauthorized('Token missing'));
     }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const userData = tokenService.validateAccessToken(token);
+    if (!userData) {
+      return next(ApiError.unauthorized('Invalid or expired token'));
+    }
+    req.user = userData;
     next();
   } catch (e) {
-    next(ApiError.unauthorized('Invalid token'));
+    console.error('Auth middleware error:', e);
+    return next(ApiError.unauthorized('Authorization failed'));
   }
 }

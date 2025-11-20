@@ -1,0 +1,29 @@
+
+.theme-toggle,
+.switch-mode-btn {
+  cursor: pointer;
+  background: var(--accent-gradient);
+  border: none;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 0 5px var(--accent-shadow);
+  transition: all 0.3s ease-in-out;
+}
+
+.theme-toggle:hover,
+.switch-mode-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 18px var(--accent-shadow);
+}
+
+.switch-mode-btn svg {
+  fill: #ffffff;
+  transition: transform 0.3s, fill 0.3s;
+}
+
+.switch-mode-btn:hover svg {
+  transform: rotate(15deg);
+}

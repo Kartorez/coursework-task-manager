@@ -1,12 +1,11 @@
-import { Router } from 'express';
-import userController from '../controllers/userController.js';
+import express from 'express';
 import authMiddleware from '../middleware/AuthMiddleWare.js';
+import User from '../models/User.js';
+import userController from '../controllers/userController.js';
 
-const router = Router();
+const router = express.Router();
 
-router.get('/', authMiddleware, userController.getAll);
 router.get('/me', authMiddleware, userController.me);
-router.get('/:id', authMiddleware, userController.getById);
-router.put('/:id', authMiddleware, userController.update);
+router.get('/', authMiddleware, userController.getAll);
 
 export default router;
