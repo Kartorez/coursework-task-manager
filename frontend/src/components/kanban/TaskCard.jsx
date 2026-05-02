@@ -11,7 +11,7 @@ const TaskCard = memo(
     columnName,
     columnColor,
   }) => {
-    const { attributes, listeners, setNodeRef, transform, isDragging } =
+    const { attributes, listeners, setNodeRef, isDragging } =
       useDraggable({
         id: task.id,
         data: { task },
