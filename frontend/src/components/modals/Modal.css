@@ -11,7 +11,7 @@
   background: rgba(0, 0, 0, 0.6);
   z-index: 999; 
 }
-.modal-window .form-container {
+.modal-content .form-container {
   margin: 0;
   overflow-y: auto;
 }
@@ -22,15 +22,12 @@
 .form-footer.modal-buttons>.form-button{
   width: 48%;
 }
-.modal-window {
+.modal-content {
   display: flex;
   flex-direction: column;
   max-height: 85vh; 
   border-radius: 16px;
-  padding: 40px;
-  padding: 0;
   overflow: hidden; 
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -65,7 +62,7 @@
   background: linear-gradient(180deg, #7a6dfc, #a77eff);
 }
 
-.modal-window> .form-footer {
+.modal-content > .form-footer {
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -78,8 +75,7 @@
 .form-footer.modal-buttons>.form-button.button{
   padding: 10px 10px;
 }
-.modal-window.form-container{
+.modal-content.form-container{
   padding: 10px;
   background-color: var(--form-bg);
-
 }

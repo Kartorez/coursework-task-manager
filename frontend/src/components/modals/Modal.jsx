@@ -6,7 +6,7 @@ const Modal = ({ isOpen, onClose, children }) => {
 
   return ReactDOM.createPortal(
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-window" onClick={(e) => e.stopPropagation()}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>,
