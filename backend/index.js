@@ -19,7 +19,7 @@ const swaggerFile = JSON.parse(
   fs.readFileSync('./docs/swagger-output.json', 'utf-8')
 );
 
-app.use(cors({ origin: 'http://localhost:3000', credentials: true }));
+app.use(cors({ origin: process.env.CLIENT_URL || 'http://localhost:3000', credentials: true }));
 app.use(cookieParser());
 app.use(express.json());
 app.use('/api', router);
