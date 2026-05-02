@@ -3,6 +3,15 @@ import User from '../models/User.js';
 import tokenService from '../service/tokenService.js';
 import ApiError from '../error/ApiError.js';
 
+const isProd = process.env.NODE_ENV === 'production';
+
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: isProd ? 'none' : 'lax',
+  secure: isProd,
+  maxAge: 7 * 24 * 60 * 60 * 1000,
+};
+
 class AuthController {
   async registration(req, res, next) {
     try {
@@ -29,12 +38,7 @@ class AuthController {
 
       await tokenService.saveToken(user.id, tokens.refreshToken);
 
-      res.cookie('refreshToken', tokens.refreshToken, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: false,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
 
       return res.json({
         user: {
@@ -69,12 +73,7 @@ class AuthController {
 
       await tokenService.saveToken(user.id, tokens.refreshToken);
 
-      res.cookie('refreshToken', tokens.refreshToken, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: false,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
 
       return res.json({
         user: {
@@ -92,8 +91,10 @@ class AuthController {
   async logout(req, res, next) {
     try {
       const { refreshToken } = req.cookies;
-      await tokenService.removeToken(refreshToken);
-      res.clearCookie('refreshToken');
+      if (refreshToken) {
+        await tokenService.removeToken(refreshToken);
+      }
+      res.clearCookie('refreshToken', cookieOptions);
       res.json({ message: 'Logged out' });
     } catch (e) {
       next(ApiError.internal(e.message));
@@ -118,12 +119,7 @@ class AuthController {
 
       await tokenService.saveToken(user.id, tokens.refreshToken);
 
-      res.cookie('refreshToken', tokens.refreshToken, {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: false,
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-      });
+      res.cookie('refreshToken', tokens.refreshToken, cookieOptions);
 
       return res.json({
         user: {
