@@ -16,9 +16,9 @@ const Task = sequelize.define(
     description: {
       type: DataTypes.TEXT,
     },
-    status: {
-      type: DataTypes.ENUM('todo', 'in-progress', 'done'),
-      defaultValue: 'todo',
+    column_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
     },
   },
   {

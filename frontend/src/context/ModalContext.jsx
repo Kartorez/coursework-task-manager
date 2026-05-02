@@ -1,4 +1,10 @@
-import { createContext, useContext, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import AddTaskModal from '../components/modals/AddTaskModal';
 import EditTaskModal from '../components/modals/EditTaskModal';
 import ViewTaskModal from '../components/modals/ViewTaskModal';
@@ -8,14 +14,19 @@ const ModalContext = createContext();
 export const ModalProvider = ({ children }) => {
   const [modal, setModal] = useState(null);
 
-  const openModal = (component, props = {}) => {
+  const openModal = useCallback((component, props = {}) => {
     setModal({ component, props });
-  };
+  }, []);
 
-  const closeModal = () => setModal(null);
+  const closeModal = useCallback(() => setModal(null), []);
+
+  const value = useMemo(
+    () => ({ openModal, closeModal }),
+    [openModal, closeModal]
+  );
 
   return (
-    <ModalContext.Provider value={{ openModal, closeModal }}>
+    <ModalContext.Provider value={value}>
       {children}
 
       {modal?.component === 'add' && (

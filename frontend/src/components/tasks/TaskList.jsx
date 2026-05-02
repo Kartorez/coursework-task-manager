@@ -2,6 +2,7 @@ import { useMemo, useCallback, useState } from 'react';
 import { useModal } from '../../context/ModalContext';
 import { useAuth } from '../../context/AuthContext';
 import { useTasks } from '../../context/TaskContext';
+import { useColumns } from '../../context/ColumnContext';
 import TaskCard from '../kanban/TaskCard';
 import Loader from '../Loader';
 import FilterSelect from '../filters/FilterSelect';
@@ -14,8 +15,15 @@ const TaskList = () => {
   const { openModal } = useModal();
   const { user } = useAuth();
   const { tasks, setTasks, loading } = useTasks();
+  const { columns } = useColumns();
   const [assigneeFilter, setAssigneeFilter] = useState(null);
   const [tagFilter, setTagFilter] = useState(null);
+  const [columnFilter, setColumnFilter] = useState(null);
+
+  const columnOptions = useMemo(
+    () => columns.map((c) => ({ value: c.id, label: c.name })),
+    [columns]
+  );
 
   const assigneeOptions = useMemo(() => {
     const names = new Set();
@@ -40,26 +48,26 @@ const TaskList = () => {
   const filteredTasks = useMemo(() => {
     const assigneeValue = getSelectValue(assigneeFilter);
     const tagValue = getSelectValue(tagFilter);
+    const columnValue = getSelectValue(columnFilter);
 
     return tasks.filter((task) => {
       const matchAssignee = assigneeValue
         ? task.assignees?.some((a) => a.username === assigneeValue)
         : true;
-
       const matchTag = tagValue
         ? task.tags?.some((t) => t.name === tagValue)
         : true;
+      const matchColumn = columnValue ? task.column_id === columnValue : true;
 
-      return matchAssignee && matchTag;
+      return matchAssignee && matchTag && matchColumn;
     });
-  }, [tasks, assigneeFilter, tagFilter]);
+  }, [tasks, assigneeFilter, tagFilter, columnFilter]);
 
   const handleOpenTask = useCallback(
-    (task, onSave) => {
+    (task) => {
       const isCreator =
         user?.id === task?.creator_id || user?.id === task?.creator?.id;
-
-      openModal(isCreator ? 'edit' : 'view', { task, onSave });
+      openModal(isCreator ? 'edit' : 'view', { task });
     },
     [openModal, user]
   );
@@ -91,6 +99,14 @@ const TaskList = () => {
 
           <div className="filters">
             <FilterSelect
+              label="Колонка"
+              value={columnFilter}
+              onChange={setColumnFilter}
+              defaultOptions={columnOptions}
+              isMulti={false}
+              isClearable={true}
+            />
+            <FilterSelect
               label="Виконавці"
               value={assigneeFilter}
               onChange={setAssigneeFilter}
@@ -98,7 +114,6 @@ const TaskList = () => {
               isMulti={false}
               isClearable={true}
             />
-
             <FilterSelect
               label="Теги"
               value={tagFilter}
@@ -111,14 +126,19 @@ const TaskList = () => {
         </div>
 
         {filteredTasks.length > 0 ? (
-          filteredTasks.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              showStatus
-              onClick={() => handleOpenTask(task, handleUpdateTask)}
-            />
-          ))
+          filteredTasks.map((task) => {
+            const col = columns.find((c) => c.id === task.column_id);
+            return (
+              <TaskCard
+                key={task.id}
+                task={task}
+                showStatus
+                columnName={col?.name}
+                columnColor={col?.color}
+                onClick={() => handleOpenTask(task, handleUpdateTask)}
+              />
+            );
+          })
         ) : (
           <p className="no-tasks">Немає задач</p>
         )}

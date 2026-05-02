@@ -6,6 +6,7 @@ import router from './routes/index.js';
 import errorMiddleware from './middleware/ErrorHandlingMiddleWare.js';
 import swaggerUi from 'swagger-ui-express';
 import cookieParser from 'cookie-parser';
+import seedDefaultColumns from './seeders/seedColumn.js';
 import fs from 'fs';
 
 import './models/associations.js';
@@ -29,11 +30,10 @@ const start = async () => {
   try {
     await sequelize.authenticate();
     await sequelize.sync({ alter: true });
-    console.log('DB connected');
-
-    app.listen(PORT, () =>
-      console.log(`Server running on http://localhost:${PORT}`)
-    );
+    await seedDefaultColumns();
+    app.listen(PORT, () => {
+      console.log(`Server started on port ${PORT}`);
+    });
   } catch (e) {
     console.error('Error starting server:', e.message);
   }

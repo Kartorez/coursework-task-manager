@@ -17,12 +17,11 @@ export const taskService = {
   },
 
   async delete(id) {
-    const { data } = await axiosInstance.delete(`/tasks/${id}`);
-    return data;
+    await axiosInstance.delete(`/tasks/${id}`);
   },
 
-  async changeStatus(id, status) {
-    const res = await axiosInstance.patch(`/tasks/${id}/status`, { status });
-    return res.data;
+  async changeColumn(id, column_id) {
+    const { data } = await axiosInstance.put(`/tasks/${id}`, { column_id });
+    return data;
   },
 };

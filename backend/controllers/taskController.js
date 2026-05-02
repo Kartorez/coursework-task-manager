@@ -43,7 +43,13 @@ class TaskController {
 
   async create(req, res, next) {
     try {
-      const { title, description, tags = [], assignees = [] } = req.body;
+      const {
+        title,
+        description,
+        tags = [],
+        assignees = [],
+        column_id,
+      } = req.body;
 
       if (!title) return next(ApiError.badRequest('Title is required'));
 
@@ -51,6 +57,7 @@ class TaskController {
         title,
         description,
         creator_id: req.user.id,
+        column_id: column_id ?? null,
       });
 
       if (tags.length) {
@@ -103,7 +110,13 @@ class TaskController {
   async update(req, res, next) {
     try {
       const { id } = req.params;
-      const { title, description, tags = [], assignees = [] } = req.body;
+      const {
+        title,
+        description,
+        tags = [],
+        assignees = [],
+        column_id,
+      } = req.body;
 
       const task = await Task.findByPk(id, {
         include: ['tags', 'assignees'],
@@ -115,6 +128,7 @@ class TaskController {
       await task.update({
         title: title ?? task.title,
         description: description ?? task.description,
+        column_id: column_id !== undefined ? column_id : task.column_id,
       });
 
       if (Array.isArray(tags)) {

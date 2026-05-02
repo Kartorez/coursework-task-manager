@@ -32,7 +32,7 @@ const ErrorPage = () => {
       <h2 className="error-message">{message.title}</h2>
       <p className="error-description">{message.desc}</p>
 
-      <Link to="/" className="error-button button">
+      <Link to="/Dashboard" className="error-button button">
         Go Home
       </Link>
     </div>

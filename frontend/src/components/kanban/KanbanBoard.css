@@ -1,14 +1,92 @@
-.kanban-board{
+.kanban-board {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-  justify-content: center;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
   gap: 1.5rem;
   padding: 2rem;
   flex: 1;
-  align-content: stretch;
-  height: calc(100vh - 160px); 
-  align-items: stretch;
+  height: calc(100vh - 160px);
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+.kanban-board > .kanban-column {
+  flex: 0 0 280px;
+  width: 280px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.kanban-add-column {
+  flex: 0 0 260px;
+  width: 260px;
+  min-height: 80px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.kanban-add-column__btn {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  border: 1px dashed var(--divider-color);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+  text-align: left;
+}
+
+.kanban-add-column__btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-color);
+  border-color: var(--accent-color, #6366f1);
+}
+
+.kanban-add-column__form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 16px;
+  border: 1px solid var(--divider-color);
+  background-color: var(--card-bg);
+  backdrop-filter: blur(20px);
+}
+
+.kanban-add-column__input {
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid var(--divider-color);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-color);
+  font-size: 0.875rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.kanban-add-column__input:focus {
+  border-color: var(--accent-color, #6366f1);
+}
+
+.kanban-add-column__form .button {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.loading-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 160px);
+  width: 100%;
 }
 
 .fade-in-out {

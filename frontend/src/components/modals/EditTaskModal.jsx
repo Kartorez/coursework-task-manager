@@ -3,6 +3,7 @@ import TaskModalLayout from '../forms/TaskModalLayout';
 import TaskFormFields from '../forms/TaskFormFields';
 import { useTaskForm } from '../../hooks/useTaskForm';
 import { useTasks } from '../../context/TaskContext';
+import { useColumns } from '../../context/ColumnContext';
 import { taskService } from '../../api/taskService';
 import { getAllUsers, searchUsers } from '../../api/userService';
 import { useToast } from '../../context/ToastContext';
@@ -18,7 +19,18 @@ const EditTaskModal = ({ isOpen, onClose, task, onSave }) => {
 
   const { showToast } = useToast();
   const { setTasks } = useTasks();
+  const { columns } = useColumns();
   const [userOptions, setUserOptions] = useState([]);
+
+  const [selectedColumnId, setSelectedColumnId] = useState(
+    task?.column_id ?? null
+  );
+
+  useEffect(() => {
+    if (task?.column_id) {
+      setSelectedColumnId(task.column_id);
+    }
+  }, [task?.column_id]);
 
   useEffect(() => {
     getAllUsers().then(setUserOptions).catch(console.error);
@@ -50,6 +62,7 @@ const EditTaskModal = ({ isOpen, onClose, task, onSave }) => {
               .filter(Boolean)
           : [],
         assignees: data.assignees || [],
+        column_id: selectedColumnId,
       };
 
       const updated = await taskService.update(task.id, updatedTask);
@@ -59,21 +72,19 @@ const EditTaskModal = ({ isOpen, onClose, task, onSave }) => {
       setTasks((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
 
       onClose();
-      showToast('Задача успішно змінена ', 'success');
-    } catch (error) {
-      showToast('Задача не вдалось змінити ', 'error');
+      showToast('Задача успішно змінена', 'success');
+    } catch {
+      showToast('Задачу не вдалось змінити', 'error');
     }
   };
 
   const handleDelete = async () => {
     try {
       await taskService.delete(task.id);
-
       setTasks((prev) => prev.filter((t) => t.id !== task.id));
       showToast('Задачу видалено', 'success');
-
       onClose();
-    } catch (error) {
+    } catch {
       showToast('Не вдалось видалити задачу', 'error');
     }
   };
@@ -113,6 +124,9 @@ const EditTaskModal = ({ isOpen, onClose, task, onSave }) => {
           setValue('assignees', selected ? selected.map((s) => s.value) : [])
         }
         loadAssigneeOptions={loadAssigneeOptions}
+        columns={columns}
+        selectedColumnId={selectedColumnId}
+        onColumnChange={setSelectedColumnId}
       />
     </TaskModalLayout>
   );

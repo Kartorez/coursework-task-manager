@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import { authService } from '../api/authService';
 
 const AuthContext = createContext();
@@ -26,22 +33,23 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener('logout', handleLogout);
   }, []);
 
-  const login = async ({ email, password }) => {
+  const login = useCallback(async ({ email, password }) => {
     const data = await authService.login({ email, password });
     setUser(data.user);
     return data.user;
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     await authService.logout();
     setUser(null);
-  };
+  }, []);
 
-  return (
-    <AuthContext.Provider value={{ user, setUser, login, logout, loading }}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({ user, setUser, login, logout, loading }),
+    [user, login, logout, loading]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => useContext(AuthContext);
