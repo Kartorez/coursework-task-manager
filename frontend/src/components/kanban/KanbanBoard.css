@@ -19,6 +19,10 @@
   overflow-x: hidden;
 }
 
+.kanban-board.is-dragging > .kanban-column {
+  overflow-y: hidden;
+}
+
 .kanban-add-column {
   flex: 0 0 260px;
   width: 260px;
@@ -91,7 +95,6 @@
 
 .fade-in-out {
   opacity: 0;
-  transform: translateY(5px);
   animation: fadeIn 0.35s ease-out forwards;
 }
 
@@ -102,13 +105,11 @@
 @keyframes fadeIn {
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
 @keyframes fadeOut {
   to {
     opacity: 0;
-    transform: translateY(5px);
   }
 }

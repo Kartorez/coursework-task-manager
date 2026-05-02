@@ -64,11 +64,13 @@ const KanbanBoard = () => {
     }
 
     document.body.style.overflow = 'hidden';
+    document.querySelector('.kanban-board')?.classList.add('is-dragging');
   }, []);
 
   const handleDragEnd = useCallback(
     async (event) => {
       document.body.style.overflow = '';
+      document.querySelector('.kanban-board')?.classList.remove('is-dragging');
       const { active, over } = event;
       setActiveTask(null);
       if (!over) return;
@@ -106,6 +108,7 @@ const KanbanBoard = () => {
 
   const handleDragCancel = useCallback(() => {
     document.body.style.overflow = '';
+    document.querySelector('.kanban-board')?.classList.remove('is-dragging');
     setActiveTask(null);
   }, []);
 

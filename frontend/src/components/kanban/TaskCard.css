@@ -10,8 +10,7 @@
   backdrop-filter: blur(20px);
   cursor: pointer;
   transition: box-shadow 0.3s ease;
-  z-index: 99999;
-  will-change: transform;
+  z-index: 1;
 }
 .task-card:hover {
   box-shadow: var(--card-hover-shadow);
@@ -90,7 +89,7 @@
     backdrop-filter: blur(20px);
     cursor: pointer;
     transition: box-shadow 0.3s ease;
-    z-index: 99999;
+    z-index: 1;
   }
   .task-card:hover {
     box-shadow: var(--card-hover-shadow);

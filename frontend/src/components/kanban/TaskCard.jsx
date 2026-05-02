@@ -1,5 +1,4 @@
 import { useDraggable } from '@dnd-kit/core';
-import { CSS } from '@dnd-kit/utilities';
 import { memo } from 'react';
 import './TaskCard.css';
 
@@ -20,11 +19,10 @@ const TaskCard = memo(
       });
 
     const style = {
-      transform:
-        !isOverlay && transform ? CSS.Transform.toString(transform) : undefined,
-      zIndex: isDragging || isOverlay ? 9999 : 1,
-      cursor: 'pointer',
+      zIndex: isOverlay ? 9999 : 1,
+      cursor: isDragging ? 'grabbing' : 'pointer',
       opacity: isDragging && !isOverlay ? 0 : 1,
+      pointerEvents: isDragging && !isOverlay ? 'none' : undefined,
       boxShadow: isOverlay
         ? '0 10px 25px rgba(0, 0, 0, 0.35)'
         : '0 4px 10px rgba(0, 0, 0, 0.2)',

@@ -1,5 +1,10 @@
+import Select from 'react-select';
 import AsyncSelect from 'react-select/async';
 import './FilterSelect.css';
+
+const portalStyles = {
+  menuPortal: (base) => ({ ...base, zIndex: 9999 }),
+};
 
 const FilterSelect = ({
   label,
@@ -12,25 +17,31 @@ const FilterSelect = ({
   isMulti = true,
   isClearable = false,
 }) => {
+  const shared = {
+    placeholder,
+    classNamePrefix: 'filter-select',
+    value,
+    onChange,
+    isMulti,
+    isClearable,
+    menuPortalTarget: document.body,
+    styles: portalStyles,
+  };
+
   return (
     <div className={`filter-group ${className}`}>
       {label && <label className="filter-label">{label}</label>}
 
-      <AsyncSelect
-        cacheOptions
-        defaultOptions={defaultOptions}
-        loadOptions={loadOptions}
-        placeholder={placeholder}
-        classNamePrefix="filter-select"
-        value={value}
-        onChange={onChange}
-        isMulti={isMulti}
-        isClearable={isClearable}
-        menuPortalTarget={document.body}
-        styles={{
-          menuPortal: (base) => ({ ...base, zIndex: 9999 }),
-        }}
-      />
+      {loadOptions ? (
+        <AsyncSelect
+          cacheOptions
+          defaultOptions={defaultOptions}
+          loadOptions={loadOptions}
+          {...shared}
+        />
+      ) : (
+        <Select options={defaultOptions} {...shared} />
+      )}
     </div>
   );
 };
