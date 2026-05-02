@@ -2,6 +2,10 @@
 
 Веб-застосунок для управління задачами з канбан-дошкою, побудований на React та Express.js.
 
+**Demo:** [coursework-task-manager.vercel.app](https://coursework-task-manager.vercel.app)
+
+> Перший запит може зайняти до 50 секунд — безкоштовний сервер Render вимикається після 15 хв бездіяльності.
+
 ## Можливості
 
 - **Канбан-дошка** — drag & drop перетягування задач між колонками
@@ -42,7 +46,10 @@
 ### Інфраструктура
 | Технологія | Призначення |
 |---|---|
-| Docker Compose | Оркестрація контейнерів |
+| Docker Compose | Оркестрація контейнерів (локально) |
+| Vercel | Хостинг фронтенду |
+| Render | Хостинг бекенду |
+| Neon | Хмарна PostgreSQL база |
 | Nodemon | Hot reload для бекенду |
 
 ## Структура проекту
@@ -114,7 +121,21 @@ erDiagram
     }
 ```
 
-## Запуск
+## Деплой
+
+Проєкт задеплоєний на безкоштовних хостингах:
+
+| Сервіс | Хостинг | Регіон |
+|--------|---------|--------|
+| Frontend | Vercel | Edge (автоматично найближчий) |
+| Backend | Render | Frankfurt, EU |
+| PostgreSQL | Neon | EU (aws-eu-central-1) |
+
+Для найменшого пінгу бекенд і база мають бути **в одному регіоні** (обидва EU). При створенні сервісів обирайте:
+- **Render:** Frankfurt (EU Central)
+- **Neon:** aws-eu-central-1 (Frankfurt)
+
+## Локальний запуск
 
 ### Docker Compose (рекомендовано)
 
@@ -128,7 +149,7 @@ docker compose up --build
 - **Swagger docs:** http://localhost:5000/api-docs
 - **PostgreSQL:** localhost:5432
 
-### Локальний запуск
+### Без Docker
 
 #### Передумови
 - Node.js 18+
@@ -142,7 +163,6 @@ docker compose up --build
 
 ```bash
 cd backend
-cp .env.example .env   # або створіть .env вручну
 npm install
 npm run dev
 ```
@@ -176,20 +196,20 @@ REACT_APP_API_URL=http://localhost:5000/api
 
 | Метод | Ендпоінт | Опис |
 |-------|----------|------|
-| `POST` | `/api/auth/registration` | Реєстрація |
+| `POST` | `/api/auth/register` | Реєстрація |
 | `POST` | `/api/auth/login` | Авторизація |
 | `POST` | `/api/auth/logout` | Вихід |
-| `GET`  | `/api/auth/refresh` | Оновлення токенів |
+| `POST` | `/api/auth/refresh` | Оновлення токенів |
 | `GET`  | `/api/tasks` | Отримати всі задачі |
 | `POST` | `/api/tasks` | Створити задачу |
 | `PUT`  | `/api/tasks/:id` | Оновити задачу |
 | `DELETE` | `/api/tasks/:id` | Видалити задачу |
-| `PATCH` | `/api/tasks/:id/column` | Змінити колонку задачі |
+| `PATCH` | `/api/tasks/:id/status` | Змінити статус задачі |
 | `GET`  | `/api/columns` | Отримати колонки |
 | `POST` | `/api/columns` | Створити колонку |
+| `PUT`  | `/api/columns/:id` | Оновити колонку |
 | `DELETE` | `/api/columns/:id` | Видалити колонку |
 | `GET`  | `/api/users` | Список користувачів |
-| `GET`  | `/api/users/search` | Пошук користувачів |
+| `GET`  | `/api/users/me` | Поточний користувач |
 
-Повна документація: http://localhost:5000/api-docs
-
+Swagger документація: http://localhost:5000/api-docs
