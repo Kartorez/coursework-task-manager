@@ -85,42 +85,6 @@ coursework-task-manager/
         └── styles/      # Глобальні стилі, кольори, reset
 ```
 
-## Модель даних
-
-```mermaid
-erDiagram
-    User ||--o{ Task : creates
-    User }o--o{ Task : assigned_to
-    Task }o--o{ Tag : has
-    Column ||--o{ Task : contains
-    User ||--o{ Column : owns
-
-    User {
-        int id PK
-        string username
-        string email
-        string password
-    }
-    Task {
-        int id PK
-        string title
-        string description
-        int creator_id FK
-        int column_id FK
-    }
-    Tag {
-        int id PK
-        string name
-    }
-    Column {
-        int id PK
-        string name
-        string color
-        boolean is_default
-        int user_id FK
-    }
-```
-
 ## Деплой
 
 Проєкт задеплоєний на безкоштовних хостингах:
