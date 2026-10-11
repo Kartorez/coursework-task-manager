@@ -1,8 +1,30 @@
 import Task from '../models/Task.js';
 import Tag from '../models/Tag.js';
 import User from '../models/User.js';
+import TaskType from '../models/TaskType.js';
 import ApiError from '../error/ApiError.js';
 import { Op } from 'sequelize';
+
+const taskIncludes = [
+  { model: User, as: 'creator', attributes: ['id', 'username'] },
+  {
+    model: Tag,
+    as: 'tags',
+    attributes: ['id', 'name'],
+    through: { attributes: [] },
+  },
+  {
+    model: User,
+    as: 'assignees',
+    attributes: ['id', 'username'],
+    through: { attributes: [] },
+  },
+  {
+    model: TaskType,
+    as: 'taskType',
+    attributes: ['id', 'name', 'color'],
+  },
+];
 
 class TaskController {
   async getAll(req, res, next) {
@@ -10,21 +32,7 @@ class TaskController {
       const userId = req.user.id;
 
       const tasks = await Task.findAll({
-        include: [
-          { model: User, as: 'creator', attributes: ['id', 'username'] },
-          {
-            model: Tag,
-            as: 'tags',
-            attributes: ['id', 'name'],
-            through: { attributes: [] },
-          },
-          {
-            model: User,
-            as: 'assignees',
-            attributes: ['id', 'username'],
-            through: { attributes: [] },
-          },
-        ],
+        include: taskIncludes,
         order: [['id', 'DESC']],
       });
 
@@ -49,6 +57,11 @@ class TaskController {
         tags = [],
         assignees = [],
         column_id,
+        task_type_id,
+        date,
+        start_time,
+        end_time,
+        duration,
       } = req.body;
 
       if (!title) return next(ApiError.badRequest('Title is required'));
@@ -58,6 +71,11 @@ class TaskController {
         description,
         creator_id: req.user.id,
         column_id: column_id ?? null,
+        task_type_id: task_type_id ?? null,
+        date: date ?? null,
+        start_time: start_time ?? null,
+        end_time: end_time ?? null,
+        duration: duration ?? null,
       });
 
       if (tags.length) {
@@ -84,21 +102,7 @@ class TaskController {
       }
 
       const created = await Task.findByPk(task.id, {
-        include: [
-          { model: User, as: 'creator', attributes: ['id', 'username'] },
-          {
-            model: Tag,
-            as: 'tags',
-            attributes: ['id', 'name'],
-            through: { attributes: [] },
-          },
-          {
-            model: User,
-            as: 'assignees',
-            attributes: ['id', 'username'],
-            through: { attributes: [] },
-          },
-        ],
+        include: taskIncludes,
       });
 
       res.status(201).json(created);
@@ -116,6 +120,11 @@ class TaskController {
         tags = [],
         assignees = [],
         column_id,
+        task_type_id,
+        date,
+        start_time,
+        end_time,
+        duration,
       } = req.body;
 
       const task = await Task.findByPk(id, {
@@ -129,6 +138,11 @@ class TaskController {
         title: title ?? task.title,
         description: description ?? task.description,
         column_id: column_id !== undefined ? column_id : task.column_id,
+        task_type_id: task_type_id !== undefined ? task_type_id : task.task_type_id,
+        date: date !== undefined ? date : task.date,
+        start_time: start_time !== undefined ? start_time : task.start_time,
+        end_time: end_time !== undefined ? end_time : task.end_time,
+        duration: duration !== undefined ? duration : task.duration,
       });
 
       if (Array.isArray(tags)) {
@@ -155,21 +169,7 @@ class TaskController {
       }
 
       const updated = await Task.findByPk(id, {
-        include: [
-          { model: User, as: 'creator', attributes: ['id', 'username'] },
-          {
-            model: Tag,
-            as: 'tags',
-            attributes: ['id', 'name'],
-            through: { attributes: [] },
-          },
-          {
-            model: User,
-            as: 'assignees',
-            attributes: ['id', 'username'],
-            through: { attributes: [] },
-          },
-        ],
+        include: taskIncludes,
       });
 
       res.json(updated);
@@ -193,30 +193,23 @@ class TaskController {
     }
   }
 
-  async changeStatus(req, res, next) {
+  async changeColumn(req, res, next) {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { column_id } = req.body;
 
-      if (!['todo', 'in-progress', 'done'].includes(status))
-        return next(ApiError.badRequest('Invalid status'));
-
-      const task = await Task.findByPk(id, {
-        include: [{ model: User, as: 'assignees', attributes: ['id'] }],
-      });
+      const task = await Task.findByPk(id);
       if (!task) return next(ApiError.notFound('Task not found'));
 
-      const userId = req.user.id;
-      const isCreator = task.creator_id === userId;
-      const isAssignee = task.assignees.some((a) => a.id === userId);
-      if (!isCreator && !isAssignee)
-        return next(ApiError.forbidden('You cannot change status'));
-
-      await task.update({ status });
+      await task.update({ column_id });
       res.json(task);
     } catch (e) {
       next(ApiError.internal(e.message));
     }
+  }
+
+  async changeStatus(req, res, next) {
+    return this.changeColumn(req, res, next);
   }
 }
 

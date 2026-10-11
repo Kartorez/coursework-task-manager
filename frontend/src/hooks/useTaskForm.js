@@ -5,9 +5,14 @@ import { useEffect } from 'react';
 
 const schema = yup.object({
   title: yup.string().required('Введіть назву завдання'),
-  description: yup.string().required('Введіть опис'),
-  tags: yup.string(),
+  description: yup.string().default(''),
+  tags: yup.string().default(''),
   assignees: yup.array().of(yup.number()).default([]),
+  task_type_id: yup.number().nullable().default(null),
+  date: yup.string().default(''),
+  start_time: yup.string().default(''),
+  end_time: yup.string().default(''),
+  duration: yup.string().default('1 год'),
 });
 
 export const useTaskForm = (task) => {
@@ -18,6 +23,11 @@ export const useTaskForm = (task) => {
       description: '',
       tags: '',
       assignees: [],
+      task_type_id: null,
+      date: '',
+      start_time: '',
+      end_time: '',
+      duration: '1 год',
     },
   });
 
@@ -34,6 +44,11 @@ export const useTaskForm = (task) => {
         assignees: Array.isArray(task.assignees)
           ? task.assignees.map((a) => a.id)
           : [],
+        task_type_id: task.task_type_id || task.taskType?.id || null,
+        date: task.date || '',
+        start_time: task.start_time || '',
+        end_time: task.end_time || '',
+        duration: task.duration || '1 год',
       });
     } else {
       reset({
@@ -41,6 +56,11 @@ export const useTaskForm = (task) => {
         description: '',
         tags: '',
         assignees: [],
+        task_type_id: null,
+        date: '',
+        start_time: '',
+        end_time: '',
+        duration: '1 год',
       });
     }
   }, [task, reset]);

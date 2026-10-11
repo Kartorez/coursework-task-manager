@@ -22,6 +22,20 @@ export const ColumnProvider = ({ children }) => {
       setLoading(true);
       try {
         const data = await columnService.getAll();
+        const savedOrderStr = localStorage.getItem(`kanban_col_order_${user.id}`);
+        if (savedOrderStr) {
+          try {
+            const order = JSON.parse(savedOrderStr);
+            data.sort((a, b) => {
+              const idxA = order.indexOf(a.id);
+              const idxB = order.indexOf(b.id);
+              if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+              if (idxA !== -1) return -1;
+              if (idxB !== -1) return 1;
+              return 0;
+            });
+          } catch {}
+        }
         setColumns(data);
       } finally {
         setLoading(false);

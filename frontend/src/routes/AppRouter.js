@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import MainLayout from '../layouts/MainLayout';
+import Calendar from '../pages/Calendar';
 import Dashboard from '../pages/Dashboard';
-import Tasks from '../pages/Tasks';
 import Login from '../pages/Auth/Login';
 import Registration from '../pages/Auth/Registration';
 import Landing from '../pages/Landing';
@@ -50,15 +50,15 @@ const router = createBrowserRouter([
         index: true,
         element: (
           <ProtectedRoute>
-            <Dashboard />
+            <Calendar />
           </ProtectedRoute>
         ),
       },
       {
-        path: 'tasks',
+        path: 'board',
         element: (
           <ProtectedRoute>
-            <Tasks />
+            <Dashboard />
           </ProtectedRoute>
         ),
       },

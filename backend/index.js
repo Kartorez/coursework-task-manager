@@ -14,7 +14,7 @@ import './models/associations.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
 const swaggerFile = JSON.parse(
   fs.readFileSync('./docs/swagger-output.json', 'utf-8')
 );

@@ -20,6 +20,26 @@ const Task = sequelize.define(
       type: DataTypes.INTEGER,
       allowNull: true,
     },
+    task_type_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+    },
+    date: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    start_time: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+    },
+    end_time: {
+      type: DataTypes.STRING(10),
+      allowNull: true,
+    },
+    duration: {
+      type: DataTypes.STRING(50),
+      allowNull: true,
+    },
   },
   {
     timestamps: false,

@@ -6,6 +6,7 @@ import userController from '../controllers/userController.js';
 const router = express.Router();
 
 router.get('/me', authMiddleware, userController.me);
+router.get('/search-global', authMiddleware, userController.searchGlobal);
 router.get('/', authMiddleware, userController.getAll);
 
 export default router;

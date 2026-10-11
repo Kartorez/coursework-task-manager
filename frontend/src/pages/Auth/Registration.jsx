@@ -44,87 +44,101 @@ const Registration = () => {
         password: data.password,
       });
       navigate('/login');
-      showToast('Успішна реєстрація ', 'success');
-    } catch (error) {
-      showToast('Помилка при реєстрації ', 'error');
+      showToast('Успішна реєстрація', 'success');
+    } catch {
+      showToast('Помилка при реєстрації', 'error');
     }
   };
 
   return (
-    <div className="form-layout">
-      <div className="form-container">
-        <div className="form-logo">
-          <img
-            src="images/logo_big.png"
-            alt="Logo"
-            className="form-logo__image"
-          />
+    <div className="flex-1 flex items-center justify-center p-4">
+      <div className="w-full max-w-md p-8 rounded-2xl bg-white dark:bg-[#18191d] border border-gray-200 dark:border-[#262830] shadow-xl dark:shadow-2xl flex flex-col items-center transition-colors">
+        <div className="flex items-center justify-center w-12 h-12 rounded-xl border-2 border-blue-500 text-blue-600 dark:text-blue-400 font-bold text-lg bg-blue-500/10 mb-4">
+          {new Date().getDate()}
         </div>
-        <h2 className="form-title">Реєстрація</h2>
-        <form className="form" onSubmit={handleSubmit(onSubmit)}>
-          <div className="form-group">
-            <label htmlFor="username" className="form-label">
-              Username:
+
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight mb-1">
+          Створити акаунт
+        </h2>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-6">
+          Почніть планувати свій час разом із Task Manager
+        </p>
+
+        <form className="w-full space-y-3.5" onSubmit={handleSubmit(onSubmit)}>
+          <div className="space-y-1.5">
+            <label htmlFor="username" className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+              Ім’я користувача
             </label>
             <input
               type="text"
               id="username"
-              placeholder="Введіть username"
-              className="form-input"
+              placeholder="kartorez"
+              className="w-full px-3.5 py-2 text-sm rounded-xl bg-gray-50 dark:bg-[#1f2026] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2e303a] focus:border-blue-500 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
               {...register('username')}
             />
-            <p className="input-errors">{errors.username?.message}</p>
+            {errors.username && (
+              <p className="text-xs text-red-500">{errors.username.message}</p>
+            )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Email:
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+              Email
             </label>
             <input
               type="email"
               id="email"
-              placeholder="Введіть email"
-              className="form-input"
+              placeholder="name@example.com"
+              className="w-full px-3.5 py-2 text-sm rounded-xl bg-gray-50 dark:bg-[#1f2026] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2e303a] focus:border-blue-500 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
               {...register('email')}
             />
-            <p className="input-errors">{errors.email?.message}</p>
+            {errors.email && (
+              <p className="text-xs text-red-500">{errors.email.message}</p>
+            )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              Пароль:
+          <div className="space-y-1.5">
+            <label htmlFor="password" className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+              Пароль
             </label>
             <input
               type="password"
               id="password"
-              placeholder="Введіть пароль"
-              className="form-input"
+              placeholder="••••••••"
+              className="w-full px-3.5 py-2 text-sm rounded-xl bg-gray-50 dark:bg-[#1f2026] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2e303a] focus:border-blue-500 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
               {...register('password')}
             />
-            <p className="input-errors">{errors.password?.message}</p>
+            {errors.password && (
+              <p className="text-xs text-red-500">{errors.password.message}</p>
+            )}
           </div>
 
-          <div className="form-group">
-            <label htmlFor="confirm-password" className="form-label">
-              Підтвердіть пароль:
+          <div className="space-y-1.5">
+            <label htmlFor="confirmPassword" className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+              Підтвердження паролю
             </label>
             <input
               type="password"
-              id="confirm-password"
-              placeholder="Підтвердіть пароль"
-              className="form-input"
+              id="confirmPassword"
+              placeholder="••••••••"
+              className="w-full px-3.5 py-2 text-sm rounded-xl bg-gray-50 dark:bg-[#1f2026] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2e303a] focus:border-blue-500 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
               {...register('confirmPassword')}
             />
-            <p className="input-errors">{errors.confirmPassword?.message}</p>
+            {errors.confirmPassword && (
+              <p className="text-xs text-red-500">{errors.confirmPassword.message}</p>
+            )}
           </div>
 
-          <button type="submit" className="form-button button">
-            Реєстрація
+          <button
+            type="submit"
+            className="w-full py-2.5 mt-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm shadow-sm transition-all"
+          >
+            Зареєструватись
           </button>
 
-          <div className="form-footer">
-            <span>Вже маєте акаунт?</span>
-            <Link to="/login" className="form-link">
+          <div className="pt-2 text-center text-xs text-gray-500 dark:text-gray-400">
+            <span>Вже маєте акаунт? </span>
+            <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
               Увійти
             </Link>
           </div>

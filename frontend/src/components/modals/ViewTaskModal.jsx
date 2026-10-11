@@ -14,7 +14,11 @@ const ViewTaskModal = ({ isOpen, onClose, task }) => {
       onClose={onClose}
       title="Детальніше"
       buttons={
-        <button type="button" className="form-button button" onClick={onClose}>
+        <button
+          type="button"
+          className="px-4 py-2 text-sm font-medium rounded-xl bg-[#252832] hover:bg-[#2d303c] text-white transition-colors"
+          onClick={onClose}
+        >
           Закрити
         </button>
       }

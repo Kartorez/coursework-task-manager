@@ -1,8 +1,7 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, Fragment } from 'react';
 import KanbanColumn from './KanbanColumn';
 import TaskCard from './TaskCard';
 import Loader from '../Loader';
-import './KanbanBoard.css';
 import { useModal } from '../../context/ModalContext';
 import { useTasks } from '../../context/TaskContext';
 import { useColumns } from '../../context/ColumnContext';
@@ -20,10 +19,80 @@ import { taskService } from '../../api/taskService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
+const ColumnDropZone = ({
+  index,
+  isDraggingColumn,
+  isForbidden,
+  onDropColumn,
+}) => {
+  const [isOver, setIsOver] = useState(false);
+
+  return (
+    <div
+      onDragOver={(e) => {
+        if (e.dataTransfer.types.includes('application/x-kanban-column')) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = isForbidden ? 'none' : 'move';
+          if (!isForbidden && !isOver) {
+            setIsOver(true);
+          }
+        }
+      }}
+      onDragEnter={(e) => {
+        if (
+          e.dataTransfer.types.includes('application/x-kanban-column') &&
+          !isForbidden
+        ) {
+          setIsOver(true);
+        }
+      }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget)) {
+          setIsOver(false);
+        }
+      }}
+      onDrop={(e) => {
+        setIsOver(false);
+        if (isForbidden) return;
+        const sourceId = e.dataTransfer.getData('application/x-kanban-column');
+        if (sourceId) {
+          e.preventDefault();
+          onDropColumn(sourceId, index);
+        }
+      }}
+      className={`relative self-stretch flex items-center justify-center flex-shrink-0 transition-all select-none ${
+        index === 0 ? 'w-2' : 'w-4'
+      }`}
+    >
+      {isDraggingColumn && !isForbidden && (
+        <div className="absolute inset-y-0 -left-3 -right-3 z-30 cursor-pointer" />
+      )}
+
+      <div
+        className={`transition-all duration-200 rounded-full flex flex-col items-center justify-between py-2 ${
+          isOver && !isForbidden
+            ? 'w-1.5 h-full min-h-[320px] bg-blue-500 shadow-[0_0_14px_rgba(59,130,246,0.9)] scale-100 opacity-100 z-40'
+            : isDraggingColumn && !isForbidden
+            ? 'w-1 h-3/4 border-r-2 border-dashed border-blue-400/40 opacity-70'
+            : 'w-0 opacity-0'
+        }`}
+      >
+        {isOver && !isForbidden && (
+          <>
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 ring-2 ring-white dark:ring-gray-900 shadow-md -mt-1" />
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-500 ring-2 ring-white dark:ring-gray-900 shadow-md -mb-1" />
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const KanbanBoard = () => {
   const { tasks, setTasks, loading: tasksLoading } = useTasks();
   const {
     columns,
+    setColumns,
     loading: columnsLoading,
     addColumn,
     removeColumn,
@@ -32,6 +101,7 @@ const KanbanBoard = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
   const [activeTask, setActiveTask] = useState(null);
+  const [draggingColumnId, setDraggingColumnId] = useState(null);
 
   const sensors = useSensors(
     useSensor(MouseSensor, { activationConstraint: { distance: 8 } }),
@@ -53,6 +123,11 @@ const KanbanBoard = () => {
     return map;
   }, [tasks, columns]);
 
+  const sourceColIdx = useMemo(() => {
+    if (!draggingColumnId) return -1;
+    return columns.findIndex((c) => String(c.id) === String(draggingColumnId));
+  }, [draggingColumnId, columns]);
+
   const handleDragStart = useCallback((event) => {
     const dragged = event.active.data.current?.task;
 
@@ -64,13 +139,11 @@ const KanbanBoard = () => {
     }
 
     document.body.style.overflow = 'hidden';
-    document.querySelector('.kanban-board')?.classList.add('is-dragging');
   }, []);
 
   const handleDragEnd = useCallback(
     async (event) => {
       document.body.style.overflow = '';
-      document.querySelector('.kanban-board')?.classList.remove('is-dragging');
       const { active, over } = event;
       setActiveTask(null);
       if (!over) return;
@@ -108,9 +181,45 @@ const KanbanBoard = () => {
 
   const handleDragCancel = useCallback(() => {
     document.body.style.overflow = '';
-    document.querySelector('.kanban-board')?.classList.remove('is-dragging');
     setActiveTask(null);
   }, []);
+
+  const handleColumnDragStart = useCallback((id) => {
+    setDraggingColumnId(String(id));
+  }, []);
+
+  const handleColumnDragEnd = useCallback(() => {
+    setDraggingColumnId(null);
+  }, []);
+
+  const handleMoveColumnToIndex = useCallback(
+    (sourceId, targetIndex) => {
+      setDraggingColumnId(null);
+      setColumns((prev) => {
+        const sourceIdx = prev.findIndex((c) => String(c.id) === String(sourceId));
+        if (sourceIdx === -1) return prev;
+
+        if (targetIndex === sourceIdx || targetIndex === sourceIdx + 1) {
+          return prev;
+        }
+
+        const reordered = [...prev];
+        const [moved] = reordered.splice(sourceIdx, 1);
+        const finalIndex = sourceIdx < targetIndex ? targetIndex - 1 : targetIndex;
+        reordered.splice(finalIndex, 0, moved);
+
+        if (user?.id) {
+          localStorage.setItem(
+            `kanban_col_order_${user.id}`,
+            JSON.stringify(reordered.map((c) => c.id))
+          );
+        }
+        return reordered;
+      });
+      showToast('Порядок колонок змінено', 'success');
+    },
+    [setColumns, user, showToast]
+  );
 
   const handleOpenTask = useCallback(
     (task) => {
@@ -137,7 +246,7 @@ const KanbanBoard = () => {
   const handleAddColumn = useCallback(
     async (name) => {
       try {
-        await addColumn(name, '#6366f1');
+        await addColumn(name, '#3b82f6');
         showToast('Колонку створено', 'success');
       } catch {
         showToast('Не вдалось створити колонку', 'error');
@@ -148,8 +257,16 @@ const KanbanBoard = () => {
 
   const loading = tasksLoading || columnsLoading;
 
+  if (loading) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-[300px]">
+        <Loader size={60} />
+      </div>
+    );
+  }
+
   return (
-    <div className="kanban-board fade-in-out">
+    <div className="flex-1 flex overflow-x-auto pb-4 items-start select-none">
       <DndContext
         sensors={sensors}
         onDragStart={handleDragStart}
@@ -157,15 +274,20 @@ const KanbanBoard = () => {
         onDragCancel={handleDragCancel}
         modifiers={[restrictToWindowEdges]}
       >
-        {loading ? (
-          <div className="loading-wrapper fade-in-out">
-            <Loader size={70} />
-          </div>
-        ) : (
-          <>
-            {columns.map((col) => (
+        {columns.map((col, index) => {
+          const isForbidden =
+            sourceColIdx !== -1 &&
+            (index === sourceColIdx || index === sourceColIdx + 1);
+
+          return (
+            <Fragment key={col.id}>
+              <ColumnDropZone
+                index={index}
+                isDraggingColumn={!!draggingColumnId}
+                isForbidden={isForbidden}
+                onDropColumn={handleMoveColumnToIndex}
+              />
               <KanbanColumn
-                key={col.id}
                 id={String(col.id)}
                 title={col.name}
                 color={col.color}
@@ -173,10 +295,23 @@ const KanbanBoard = () => {
                 tasks={tasksByColumn[col.id] || []}
                 onTaskClick={handleOpenTask}
                 onDelete={handleRemoveColumn}
+                onColumnDragStart={handleColumnDragStart}
+                onColumnDragEnd={handleColumnDragEnd}
               />
-            ))}
-          </>
-        )}
+            </Fragment>
+          );
+        })}
+
+        <ColumnDropZone
+          index={columns.length}
+          isDraggingColumn={!!draggingColumnId}
+          isForbidden={
+            sourceColIdx !== -1 &&
+            (columns.length === sourceColIdx ||
+              columns.length === sourceColIdx + 1)
+          }
+          onDropColumn={handleMoveColumnToIndex}
+        />
 
         <DragOverlay adjustScale={false} dropAnimation={null}>
           {activeTask && (
@@ -189,7 +324,9 @@ const KanbanBoard = () => {
         </DragOverlay>
       </DndContext>
 
-      <AddColumn onAdd={handleAddColumn} />
+      <div className="ml-2 flex-shrink-0">
+        <AddColumn onAdd={handleAddColumn} />
+      </div>
     </div>
   );
 };
