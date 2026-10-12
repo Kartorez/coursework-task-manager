@@ -72,7 +72,7 @@ const Registration = () => {
             <input
               type="text"
               id="username"
-              placeholder="kartorez"
+              placeholder="username"
               className="w-full px-3.5 py-2 text-sm rounded-xl bg-gray-50 dark:bg-[#1f2026] text-gray-900 dark:text-white border border-gray-300 dark:border-[#2e303a] focus:border-blue-500 focus:outline-none placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
               {...register('username')}
             />
